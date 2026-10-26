@@ -1,0 +1,48 @@
+{
+  "name": "bidhub",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "prisma db seed"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JorgeCb12/bidhub.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/JorgeCb12/bidhub/issues"
+  },
+  "homepage": "https://github.com/JorgeCb12/bidhub#readme",
+  "dependencies": {
+    "@prisma/client": "^7.10.1",
+    "better-auth": "^1.7.13",
+    "next": "^16.4.3",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.3",
+    "postcss": "^8.5.31",
+    "prisma": "^7.10.1",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2"
+  }
+}
