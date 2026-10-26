@@ -8,7 +8,6 @@ const nextConfig: NextConfig = {
         hostname: "*.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
-      // Opcional: para imágenes de prueba mientras no haya subidas reales
       {
         protocol: "https",
         hostname: "placehold.co",

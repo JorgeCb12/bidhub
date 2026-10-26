@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum AuctionStatus {
+  ACTIVE
+  CLOSED
+  UNSOLD
+  CANCELLED
+}
+
+// --- Modelos de Better Auth ---
+
+model User {
+  id            String    @id
+  name          String
+  email         String    @unique
+  emailVerified Boolean
+  image         String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  sessions Session[]
+  accounts Account[]
+  
+  // Relaciones BidHub
+  auctions Auction[]
+  bids     Bid[]
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// --- Modelos de BidHub ---
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  auctions  Auction[]
+}
+
+model Auction {
+  id                 String        @id @default(cuid())
+  title              String
+  description        String
+  imageUrl           String
+  startingPrice      Decimal       @db.Decimal(10, 2)
+  minIncrement       Decimal       @db.Decimal(10, 2)
+  status             AuctionStatus @default(ACTIVE)
+  endsAt             DateTime
+  cancellationReason String?
+  sellerId           String
+  categoryId         String
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  seller   User     @relation(fields: [sellerId], references: [id], onDelete: Restrict)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  bids     Bid[]
+
+  @@index([status, endsAt])
+  @@index([sellerId])
+  @@index([categoryId])
+}
+
+model Bid {
+  id        String   @id @default(cuid())
+  amount    Decimal  @db.Decimal(10, 2)
+  auctionId String
+  bidderId  String
+  createdAt DateTime @default(now())
+
+  auction Auction @relation(fields: [auctionId], references: [id], onDelete: Cascade)
+  bidder  User    @relation(fields: [bidderId], references: [id], onDelete: Restrict)
+
+  @@index([auctionId, amount(sort: Desc)])
+  @@index([bidderId, createdAt(sort: Desc)])
+}
